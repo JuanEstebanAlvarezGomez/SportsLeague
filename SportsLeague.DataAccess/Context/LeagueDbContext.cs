@@ -15,6 +15,7 @@ public class LeagueDbContext : DbContext
     public DbSet<Referee> Referees => Set<Referee>();             
     public DbSet<Tournament> Tournaments => Set<Tournament>();    
     public DbSet<TournamentTeam> TournamentTeams => Set<TournamentTeam>(); 
+    public DbSet<Sponsor> Sponsors => Set<Sponsor>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -144,5 +145,30 @@ public class LeagueDbContext : DbContext
                   .IsUnique();
         });
 
+        // ── Sponsor Configuration ──
+        modelBuilder.Entity<Sponsor>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.Name)
+                  .IsRequired()
+                  .HasMaxLength(200);
+            entity.Property(s => s.ContactEmail)
+                  .HasMaxLength(200)
+                  .IsRequired();
+            entity.Property(s => s.Phone)
+                  .HasMaxLength(20);
+            entity.Property(s => s.WebsiteUrl)
+                  .HasMaxLength(500);
+            entity.Property(s => s.Category)
+                  .IsRequired();
+            entity.Property(s => s.CreatedAt)
+                  .IsRequired();
+            entity.Property(s => s.UpdatedAt)
+                  .IsRequired(false);
+
+            // Índice único en el nombre del patrocinador
+            entity.HasIndex(s => s.Name)
+                  .IsUnique();
+        });
     }
 }
