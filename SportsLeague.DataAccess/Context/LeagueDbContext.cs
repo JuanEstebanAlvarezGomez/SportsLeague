@@ -16,6 +16,7 @@ public class LeagueDbContext : DbContext
     public DbSet<Tournament> Tournaments => Set<Tournament>();    
     public DbSet<TournamentTeam> TournamentTeams => Set<TournamentTeam>(); 
     public DbSet<Sponsor> Sponsors => Set<Sponsor>();
+    public DbSet<TournamentSponsor> TournamentSponsors => Set<TournamentSponsor>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -172,6 +173,36 @@ public class LeagueDbContext : DbContext
 
             // Indice único en el correo electrónico
             entity.HasIndex(s => s.ContactEmail)
+                  .IsUnique();
+        });
+
+        // ── TournamentSponsor Configuration ──
+        modelBuilder.Entity<TournamentSponsor>(entity =>
+        {
+            entity.HasKey(ts => ts.Id);
+            entity.Property(ts => ts.JoinedAt)
+                  .IsRequired();
+            entity.Property(ts => ts.ContractAmount)
+                  .IsRequired();
+            entity.Property(ts => ts.CreatedAt)
+                  .IsRequired();
+            entity.Property(ts => ts.UpdatedAt)
+                  .IsRequired(false);
+
+            // Relación con Tournament
+            entity.HasOne(ts => ts.Tournament)
+                  .WithMany(t => t.TournamentSponsors)
+                  .HasForeignKey(ts => ts.TournamentId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            // Relación con Sponsor
+            entity.HasOne(ts => ts.Sponsor)
+                  .WithMany(t => t.TournamentSponsors)
+                  .HasForeignKey(tt => tt.SponsorId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            // Índice único compuesto: un patrocinador solo una vez por torneo
+            entity.HasIndex(ts => new { ts.TournamentId, ts.SponsorId })
                   .IsUnique();
         });
     }
