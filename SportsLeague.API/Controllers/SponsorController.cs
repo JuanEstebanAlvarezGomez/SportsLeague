@@ -166,7 +166,7 @@ namespace SportsLeague.API.Controllers
 
         [HttpPatch("{id}/category")]
 
-        public async Task<ActionResult> UpdateCategory(int id, [FromBody] UpdateCategoryDTO dto)
+        public async Task<ActionResult> UpdateCategory(int id, UpdateCategoryDTO dto)
         {
             try
             {
