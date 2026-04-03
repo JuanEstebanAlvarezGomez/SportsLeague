@@ -12,17 +12,20 @@ public class TournamentService : ITournamentService
     private readonly ITournamentTeamRepository _tournamentTeamRepository;
     private readonly ITeamRepository _teamRepository;
     private readonly ILogger<TournamentService> _logger;
+    private readonly ITournamentSponsorRepository _tournamentSponsorRepository;
 
     public TournamentService(
         ITournamentRepository tournamentRepository,
         ITournamentTeamRepository tournamentTeamRepository,
         ITeamRepository teamRepository,
-        ILogger<TournamentService> logger)
+        ILogger<TournamentService> logger,
+        ITournamentSponsorRepository tournamentSponsorRepository)
     {
         _tournamentRepository = tournamentRepository;
         _tournamentTeamRepository = tournamentTeamRepository;
         _teamRepository = teamRepository;
         _logger = logger;
+        _tournamentSponsorRepository = tournamentSponsorRepository;
     }
 
     public async Task<IEnumerable<Tournament>> GetAllAsync()
@@ -180,5 +183,16 @@ public class TournamentService : ITournamentService
             .GetByTournamentAsync(tournamentId);
 
         return tournamentTeams.Select(tt => tt.Team);
+    }
+    public async Task<IEnumerable<Sponsor>> GetSponsorsByTournamentAsync(int tournamentId)
+    {
+        var tournament = await _tournamentRepository.GetByIdAsync(tournamentId);
+        if (tournament == null)
+            throw new KeyNotFoundException($"No se encontró el torneo con ID {tournamentId}");
+
+        var tournamentSponsors = await _tournamentSponsorRepository
+            .GetByTournamentIdAsync(tournamentId);
+
+        return tournamentSponsors.Select(ts => ts.Sponsor);
     }
 }
