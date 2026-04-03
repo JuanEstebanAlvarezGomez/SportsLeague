@@ -156,7 +156,7 @@ public class LeagueDbContext : DbContext
                   .HasMaxLength(200)
                   .IsRequired();
             entity.Property(s => s.Phone)
-                  .HasMaxLength(20);
+                  .HasMaxLength(16);
             entity.Property(s => s.WebsiteUrl)
                   .HasMaxLength(500);
             entity.Property(s => s.Category)
@@ -168,6 +168,10 @@ public class LeagueDbContext : DbContext
 
             // Índice único en el nombre del patrocinador
             entity.HasIndex(s => s.Name)
+                  .IsUnique();
+
+            // Indice único en el correo electrónico
+            entity.HasIndex(s => s.ContactEmail)
                   .IsUnique();
         });
     }
