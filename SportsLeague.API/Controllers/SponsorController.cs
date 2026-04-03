@@ -185,5 +185,67 @@ namespace SportsLeague.API.Controllers
                 return Conflict(new { message = ex.Message });
             }
         }
+
+        [HttpPost("{id}/tournaments")]
+        public async Task<ActionResult<TournamentSponsorResponseDTO>> RegisterSponsorToTournament(int id, RegisterSponsorDTO dto)
+        {
+            try
+            {
+                var tournamentSponsor = await _sponsorService.RegisterSponsorToTournamentAsync
+                    (id, dto.TournamentId, dto.ContractAmount);
+                var responseDto = _mapper.Map<TournamentSponsorResponseDTO>(tournamentSponsor);
+                return Ok(responseDto);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "Sponsor with ID {Id} or Tournament with ID {TournamentId} not found for registration",
+                    id, dto.TournamentId);
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "Error registering sponsor with ID {Id} to tournament with ID {TournamentId}",
+                    id, dto.TournamentId);
+                return Conflict(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("{id}/tournaments")]
+        public async Task<ActionResult<IEnumerable<TournamentSponsorResponseDTO>>> GetTournamentsBySponsor(int id)
+        {
+            try
+            {
+                var tournamentSponsors = await _sponsorService.GetTournamentsBySponsorAsync(id);
+                var responseDto = _mapper.Map<IEnumerable<TournamentSponsorResponseDTO>>(tournamentSponsors);
+                return Ok(responseDto);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "Sponsor with ID {Id} not found when retrieving tournaments", id);
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("{sponsorId}/tournaments/{tournamentId}")]
+        public async Task<ActionResult> RemoveSponsorFromTournament(int sponsorId, int tournamentId)
+        {
+            try
+            {
+                await _sponsorService.RemoveSponsorFromTournamentAsync(sponsorId, tournamentId);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "Sponsor with ID {SponsorId} or Tournament with ID {TournamentId} not found for unregistration",
+                    sponsorId, tournamentId);
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "Error unregistering sponsor with ID {SponsorId} from tournament with ID {TournamentId}",
+                    sponsorId, tournamentId);
+                return Conflict(new { message = ex.Message });
+            }
+        }
     }
 }
