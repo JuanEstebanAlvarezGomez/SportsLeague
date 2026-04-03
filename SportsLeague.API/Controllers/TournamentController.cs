@@ -113,4 +113,19 @@ public class TournamentController : ControllerBase
         }
         catch (KeyNotFoundException ex) { return NotFound(new { message = ex.Message }); }
     }
+
+    [HttpGet("{id}/sponsors")]
+    public async Task<ActionResult<IEnumerable<SponsorResponseDTO>>> GetTournamentSponsors(int id)
+    {
+        try
+        {
+            var sponsors = await _tournamentService.GetSponsorsByTournamentAsync(id);
+            var responseDto = _mapper.Map<IEnumerable<SponsorResponseDTO>>(sponsors);
+            return Ok(responseDto);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
 }
