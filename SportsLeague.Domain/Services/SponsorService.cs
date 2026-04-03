@@ -27,14 +27,14 @@ namespace SportsLeague.Domain.Services
             {
                 _logger.LogWarning("Sponsor with name {Name} already exists", sponsor.Name);
                 throw new InvalidOperationException(
-                    $"Ya existe un patrocinador con el nombre {sponsor.Name}");
+                    $"Ya existe un patrocinador con el nombre '{sponsor.Name}'");
             }
 
             if (existsEmail != null)
             {
                 _logger.LogWarning("Sponsor with contact email {Email} already exists", sponsor.ContactEmail);
                 throw new InvalidOperationException(
-                    $"Ya existe un patrocinador con el correo electrónico {sponsor.ContactEmail}");
+                    $"Ya existe un patrocinador con el correo electrónico '{sponsor.ContactEmail}'");
             }
 
             if (string.IsNullOrWhiteSpace(sponsor.ContactEmail))
@@ -70,7 +70,7 @@ namespace SportsLeague.Domain.Services
             {
                 _logger.LogWarning("Sponsor with ID {Id} not found for deletion", id);
                 throw new KeyNotFoundException(
-                    $"No se encontró el patrocinador con ID {id}");
+                    $"No se encontró el patrocinador con ID '{id}'");
             }
 
             _logger.LogInformation("Deleting Sponsor with ID: {Id}", id);
@@ -83,7 +83,7 @@ namespace SportsLeague.Domain.Services
             return await _sponsorRepository.GetAllAsync();
         }
 
-        public async Task<Sponsor?> GetByContactEmail(string email)
+        public async Task<Sponsor?> GetByContactEmailAsync(string email)
         {
             
             var sponsor = await _sponsorRepository.ExistsByContactEmailAsync(email);
@@ -92,7 +92,7 @@ namespace SportsLeague.Domain.Services
             {
                 _logger.LogWarning("Sponsor with contact email {Email} not found", email);
                 throw new KeyNotFoundException(
-                    $"No se encontró el patrocinador con el correo electrónico {email}");
+                    $"No se encontró el patrocinador con el correo electrónico '{email}'");
             }
 
             _logger.LogInformation("Retrieving sponsor with contact email: {Email}", email);
@@ -102,15 +102,13 @@ namespace SportsLeague.Domain.Services
 
         public async Task<Sponsor?> GetByIdAsync(int id)
         {
-            
+            _logger.LogInformation("Retrieving sponsor with ID: {Id}", id);
             var sponsor = await _sponsorRepository.GetByIdAsync(id);
             if (sponsor == null)
             {
                 _logger.LogWarning("Sponsor with ID {RefereeId} not found", id);
-                throw new KeyNotFoundException(
-                    $"No se encontró el patrocinador con ID {id}");
             }
-            _logger.LogInformation("Retrieving sponsor with ID: {Id}", id);
+            
             return sponsor;
         }
 
@@ -121,7 +119,7 @@ namespace SportsLeague.Domain.Services
             {
                 _logger.LogWarning("Sponsor with name {Name} not found", name);
                 throw new KeyNotFoundException(
-                    $"No se encontró el patrocinador con el nombre {name}");
+                    $"No se encontró el patrocinador con el nombre '{name}'");
             }
             _logger.LogInformation("Retrieving sponsor with name: {Name}", name);
             return sponsor;
@@ -130,11 +128,11 @@ namespace SportsLeague.Domain.Services
         public async Task<Sponsor?> UpdateAsync(int id, Sponsor sponsor)
         {
             var existingSponsor = await _sponsorRepository.GetByIdAsync(id);
+
             if (existingSponsor == null)
             {
                 _logger.LogWarning("Sponsor with ID {Id} not found for update", id);
-                throw new KeyNotFoundException(
-                    $"No se encontró el patrocinador con ID {id}");
+                throw new KeyNotFoundException($"No se encontró el patrocinador con ID '{id}'");
             }
 
             if (existingSponsor.Name != sponsor.Name)
@@ -159,15 +157,20 @@ namespace SportsLeague.Domain.Services
 
             if (string.IsNullOrWhiteSpace(sponsor.ContactEmail))
             {
+                _logger.LogWarning("Contact email is required for update on sponsor ID {Id}", id);
                 throw new InvalidOperationException("El email de contacto es obligatorio.");
             }
+
             try
             {
                 var mail = new System.Net.Mail.MailAddress(sponsor.ContactEmail);
-                if (mail.Address != sponsor.ContactEmail) throw new Exception();
+                if (mail.Address != sponsor.ContactEmail)
+                    throw new Exception();
             }
             catch
             {
+                _logger.LogWarning("Invalid email format for update on sponsor ID {Id}: {Email}",
+                    id, sponsor.ContactEmail);
                 throw new InvalidOperationException($"El email de contacto '{sponsor.ContactEmail}' no tiene un formato válido.");
             }
 
@@ -175,7 +178,6 @@ namespace SportsLeague.Domain.Services
             existingSponsor.ContactEmail = sponsor.ContactEmail;
             existingSponsor.Phone = sponsor.Phone;
             existingSponsor.WebsiteUrl = sponsor.WebsiteUrl;
-
 
             _logger.LogInformation("Updating sponsor with ID: {Id}", id);
             await _sponsorRepository.UpdateAsync(existingSponsor);
@@ -189,7 +191,7 @@ namespace SportsLeague.Domain.Services
             if (sponsor == null)
             {
                 _logger.LogWarning("Sponsor with ID {Id} not found for category update", id);
-                throw new KeyNotFoundException($"No se encontró el patrocinador con ID {id}");
+                throw new KeyNotFoundException($"No se encontró el patrocinador con ID '{id}'");
             }
 
             if (sponsor.Category == newCategory)

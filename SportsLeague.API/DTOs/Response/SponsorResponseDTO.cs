@@ -9,7 +9,7 @@ namespace SportsLeague.API.DTOs.Response
         public string ContactEmail { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
         public string WebsiteUrl { get; set; } = string.Empty;
-        public TournamentStatus Status { get; set; }
+        public SponsorCategory Category { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }
