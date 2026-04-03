@@ -2,7 +2,7 @@
 using SportsLeague.DataAccess.Context;
 using SportsLeague.Domain.Entities;
 using SportsLeague.Domain.Interfaces.Repositories;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace SportsLeague.DataAccess.Repositories;
 
