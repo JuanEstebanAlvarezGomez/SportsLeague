@@ -183,7 +183,8 @@ public class LeagueDbContext : DbContext
             entity.Property(ts => ts.JoinedAt)
                   .IsRequired();
             entity.Property(ts => ts.ContractAmount)
-                  .IsRequired();
+                  .IsRequired()
+                  .HasPrecision(18, 2);
             entity.Property(ts => ts.CreatedAt)
                   .IsRequired();
             entity.Property(ts => ts.UpdatedAt)
@@ -198,7 +199,7 @@ public class LeagueDbContext : DbContext
             // Relación con Sponsor
             entity.HasOne(ts => ts.Sponsor)
                   .WithMany(t => t.TournamentSponsors)
-                  .HasForeignKey(tt => tt.SponsorId)
+                  .HasForeignKey(ts => ts.SponsorId)
                   .OnDelete(DeleteBehavior.Cascade);
 
             // Índice único compuesto: un patrocinador solo una vez por torneo

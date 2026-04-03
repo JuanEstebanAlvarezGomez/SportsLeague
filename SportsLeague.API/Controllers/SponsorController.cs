@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SportsLeague.API.DTOs.Request;
 using SportsLeague.API.DTOs.Response;
 using SportsLeague.Domain.Entities;
+using SportsLeague.Domain.Interfaces.Repositories;
 using SportsLeague.Domain.Interfaces.Services;
 using SportsLeague.Domain.Services;
 
@@ -17,15 +18,18 @@ namespace SportsLeague.API.Controllers
         private readonly ISponsorService _sponsorService;
         private readonly IMapper _mapper;
         private readonly ILogger<SponsorController> _logger;
+        private readonly ITournamentSponsorRepository _tournamentSponsorRepository;
 
         public SponsorController(
         ISponsorService sponsorService,
         IMapper mapper,
-        ILogger<SponsorController> logger)
+        ILogger<SponsorController> logger,
+        ITournamentSponsorRepository tournamentSponsorRepository)
         {
             _sponsorService = sponsorService;
             _mapper = mapper;
             _logger = logger;
+            _tournamentSponsorRepository = tournamentSponsorRepository;
         }
 
         [HttpGet]
@@ -89,13 +93,13 @@ namespace SportsLeague.API.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error buscando por email");
-                    return StatusCode(500, new { message = "Error interno del servidor" });
+                    return NotFound(new { message = $"Patrocinador con nombre o email '{term}' no encontrado" });
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error buscando sponsor con término '{Term}'", term);
-                return StatusCode(500, new { message = "Error interno del servidor" });
+                return NotFound(new { message = $"Patrocinador con nombre o email '{term}' no encontrado" });
             }
         }
 
@@ -215,7 +219,8 @@ namespace SportsLeague.API.Controllers
         {
             try
             {
-                var tournamentSponsors = await _sponsorService.GetTournamentsBySponsorAsync(id);
+                var tournaments = await _sponsorService.GetTournamentsBySponsorAsync(id);
+                var tournamentSponsors = await _tournamentSponsorRepository.GetBySponsorIdAsync(id);
                 var responseDto = _mapper.Map<IEnumerable<TournamentSponsorResponseDTO>>(tournamentSponsors);
                 return Ok(responseDto);
             }
