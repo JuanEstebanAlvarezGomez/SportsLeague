@@ -54,7 +54,7 @@ namespace SportsLeague.Domain.Services
                 var mailAddress = new System.Net.Mail.MailAddress(sponsor.ContactEmail);
                 if (mailAddress.Address != sponsor.ContactEmail)
                 {
-                    throw new Exception(); // fuerzado de catch
+                    throw new Exception(); // forzado de catch
                 }
             }
             catch

@@ -191,7 +191,7 @@ namespace SportsLeague.API.Controllers
         }
 
         [HttpPost("{id}/tournaments")]
-        public async Task<ActionResult<TournamentSponsorResponseDTO>> RegisterSponsorToTournament(int id, RegisterSponsorDTO dto)
+        public async Task<ActionResult<TournamentSponsorResponseDTO>> RegisterSponsorToTournament(int id, TournamentSponsorRequestDTO dto)
         {
             try
             {
