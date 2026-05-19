@@ -21,6 +21,7 @@ public class LeagueDbContext : DbContext
     public DbSet<MatchResult> MatchResults => Set<MatchResult>();
     public DbSet<Goal> Goals => Set<Goal>();
     public DbSet<Card> Cards => Set<Card>();
+    public DbSet<MatchLineup> MatchLineups => Set<MatchLineup>();
 
 
 
@@ -320,10 +321,10 @@ public class LeagueDbContext : DbContext
             entity.Property(ml => ml.IsStarter)
                 .IsRequired();
 
-            // Position es enum → se guarda como int en la BD
+
             entity.Property(ml => ml.Position)
                 .IsRequired()
-                .HasConversion<int>();  // ← Esto convierte enum a int
+                .HasConversion<int>(); 
 
             entity.Property(ml => ml.CreatedAt)
                 .IsRequired();
