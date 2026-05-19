@@ -54,4 +54,18 @@ public class MatchValidationHelper
             throw new InvalidOperationException(
                 "El minuto debe estar entre 1 y 120");
     }
+
+    public async Task<Match> ValidateMatchForLineupAsync(int matchId)
+    {
+        var match = await _matchRepository.GetByIdAsync(matchId);
+        if (match == null)
+            throw new KeyNotFoundException(
+                $"No se encontró el partido con ID {matchId}");
+
+        if (match.Status != MatchStatus.Scheduled)
+            throw new InvalidOperationException(
+                "Solo se pueden registrar alineaciones en partidos Scheduled");
+
+        return match;
+    }
 }
