@@ -20,9 +20,14 @@ public class GoalRepository : GenericRepository<Goal>, IGoalRepository
     public async Task<IEnumerable<Goal>> GetByMatchWithDetailsAsync(int matchId)
     {
         return await _dbSet
-            .Where(g => g.MatchId == matchId)
-            .Include(g => g.Player)
-            .OrderBy(g => g.Minute)
-            .ToListAsync();
+                .Where(g => g.MatchId == matchId)
+                .Include(g => g.Player)
+                //.ThenInclude(p => p.Team)
+                .ThenInclude(p => p.Team)
+                //.ThenInclude(t => t.TournamentTeams)
+                //.ThenInclude(tt => tt.Tournament)
+                .OrderBy(g => g.Minute)
+                .ToListAsync();
+
     }
 }

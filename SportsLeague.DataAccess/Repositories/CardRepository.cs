@@ -20,9 +20,10 @@ public class CardRepository : GenericRepository<Card>, ICardRepository
     public async Task<IEnumerable<Card>> GetByMatchWithDetailsAsync(int matchId)
     {
         return await _dbSet
-            .Where(c => c.MatchId == matchId)
-            .Include(c => c.Player)
-            .OrderBy(c => c.Minute)
-            .ToListAsync();
+                .Where(c => c.MatchId == matchId)
+                .Include(c => c.Player)
+                .ThenInclude(p => p.Team)
+                .OrderBy(c => c.Minute)
+                .ToListAsync();
     }
 }

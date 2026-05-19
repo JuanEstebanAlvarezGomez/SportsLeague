@@ -311,5 +311,41 @@ public class LeagueDbContext : DbContext
                   .HasForeignKey(c => c.PlayerId)
                   .OnDelete(DeleteBehavior.Restrict);
         });
+
+        // ── MatchLineup Configuration ──
+        modelBuilder.Entity<MatchLineup>(entity =>
+        {
+            entity.HasKey(ml => ml.Id);
+
+            entity.Property(ml => ml.IsStarter)
+                .IsRequired();
+
+            // Position es enum → se guarda como int en la BD
+            entity.Property(ml => ml.Position)
+                .IsRequired()
+                .HasConversion<int>();  // ← Esto convierte enum a int
+
+            entity.Property(ml => ml.CreatedAt)
+                .IsRequired();
+
+            entity.Property(ml => ml.UpdatedAt)
+                .IsRequired(false);
+
+            // Relación con Match (Cascade)
+            entity.HasOne(ml => ml.Match)
+                .WithMany(m => m.MatchLineups)
+                .HasForeignKey(ml => ml.MatchId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Relación con Player (Restrict)
+            entity.HasOne(ml => ml.Player)
+                .WithMany(p => p.MatchLineups)
+                .HasForeignKey(ml => ml.PlayerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Índice único compuesto
+            entity.HasIndex(ml => new { ml.MatchId, ml.PlayerId })
+                .IsUnique();
+        });
     }
 }
