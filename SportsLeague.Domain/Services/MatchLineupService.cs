@@ -88,7 +88,7 @@ public class MatchLineupService : IMatchLineupService
     {
         var exists = await _matchLineupRepository.ExistsAsync(id);
         if (!exists)
-            throw new KeyNotFoundException($"No se encontró la alineación con ID {id}");
+            throw new KeyNotFoundException($"No se encontró al jugador con ID {id}");
 
         _logger.LogInformation("Removing lineup entry with ID {LineupId}", id);
         await _matchLineupRepository.DeleteAsync(id);
